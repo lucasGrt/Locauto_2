@@ -43,7 +43,20 @@ namespace Locacoes.Controllers
             return RedirectToAction("Index");
 
         }
+        public IActionResult Edit(int id)
+        {
+            return View(Fabricantes.Where(fab => fab.id == id).First());
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Fabricante fabricante)
+        {
+            var FabricanteEdit = Fabricantes.Where(fab => fab.id == fabricante.id).First();
+            Fabricantes.Remove(FabricanteEdit);
+            Fabricantes.Add(fabricante);
+            return RedirectToAction("Index");
+        }
     }
         
 }

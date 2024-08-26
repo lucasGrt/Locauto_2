@@ -38,8 +38,18 @@ namespace Locacoes.Controllers
 
         public IActionResult Create(Fabricante fabricante)
         {
+            if (Fabricantes.Contains(fabricante)) { 
+
+            fabricante.id = 1;
+            Fabricantes.Add(fabricante);
+            Console.WriteLine(Fabricantes);
+            }
+            else
+            {
             fabricante.id = Fabricantes.Select(x => x.id).Max() + 1;
             Fabricantes.Add(fabricante);
+            }
+            
             return RedirectToAction("Index");
 
         }

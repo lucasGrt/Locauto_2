@@ -1,7 +1,14 @@
+using Locacoes.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("LocAutoConnections");
+builder.Services.AddDbContext<locacoesContext>(options => options.UseSqlServer(connectionString));
+
 
 var app = builder.Build();
 

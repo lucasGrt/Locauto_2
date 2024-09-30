@@ -1,72 +1,157 @@
-﻿using Locacoes.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Locacoes.Data;
+using Locacoes.Models;
 
 namespace Locacoes.Controllers
 {
     public class FabricanteController : Controller
     {
-        public static List<Fabricante> Fabricantes = new List<Fabricante>()
+        private readonly locacoesContext _context;
+
+        public FabricanteController(locacoesContext context)
         {
-            new Fabricante()
-            {
-                id = 1,
-                Nome = "Assin",
-                País = "Japao",
+            _context = context;
+        }
 
-            },
-            new Fabricante()
+        // GET: Fabricante
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Fabricantes.ToListAsync());
+        }
+
+        // GET: Fabricante/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
             {
-                id = 2,
-                Nome = "Volkswagen",
-                País = "Alemanha",
+                return NotFound();
             }
-        };
 
+            var fabricante = await _context.Fabricantes
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (fabricante == null)
+            {
+                return NotFound();
+            }
+
+            return View(fabricante);
+        }
+
+        // GET: Fabricante/Create
         public IActionResult Create()
         {
-
             return View();
-
         }
-        public IActionResult Index()
-        {
 
-            return View(Fabricantes);
-        }
+        // POST: Fabricante/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-
-        public IActionResult Create(Fabricante fabricante)
+        public async Task<IActionResult> Create([Bind("id,Nome,País")] Fabricante fabricante)
         {
-            if (Fabricantes.Contains(fabricante)) { 
-
-            fabricante.id = 1;
-            Fabricantes.Add(fabricante);
-            Console.WriteLine(Fabricantes);
-            }
-            else
+            if (ModelState.IsValid)
             {
-            fabricante.id = Fabricantes.Select(x => x.id).Max() + 1;
-            Fabricantes.Add(fabricante);
+                _context.Add(fabricante);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            
-            return RedirectToAction("Index");
-
+            return View(fabricante);
         }
-        public IActionResult Edit(int id)
+
+        // GET: Fabricante/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View(Fabricantes.Where(fab => fab.id == id).First());
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var fabricante = await _context.Fabricantes.FindAsync(id);
+            if (fabricante == null)
+            {
+                return NotFound();
+            }
+            return View(fabricante);
         }
 
+        // POST: Fabricante/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Fabricante fabricante)
+        public async Task<IActionResult> Edit(int id, [Bind("id,Nome,País")] Fabricante fabricante)
         {
-            var FabricanteEdit = Fabricantes.Where(fab => fab.id == fabricante.id).First();
-            Fabricantes.Remove(FabricanteEdit);
-            Fabricantes.Add(fabricante);
-            return RedirectToAction("Index");
+            if (id != fabricante.id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(fabricante);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FabricanteExists(fabricante.id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(fabricante);
+        }
+
+        // GET: Fabricante/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var fabricante = await _context.Fabricantes
+                .FirstOrDefaultAsync(m => m.id == id);
+            if (fabricante == null)
+            {
+                return NotFound();
+            }
+
+            return View(fabricante);
+        }
+
+        // POST: Fabricante/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var fabricante = await _context.Fabricantes.FindAsync(id);
+            if (fabricante != null)
+            {
+                _context.Fabricantes.Remove(fabricante);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool FabricanteExists(int id)
+        {
+            return _context.Fabricantes.Any(e => e.id == id);
         }
     }
-        
 }

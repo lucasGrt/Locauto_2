@@ -9,5 +9,10 @@ namespace Locacoes.Data
         {
         }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Fabricante> Fabricantes { get; set; }
+        public DbSet<Modelo> Modelos { get; set; }
+        public DbSet<Veiculo> Veiculos { get; set;}
+        public DbSet<Locacao> Locacoes { get; set; }
+
     }
 }

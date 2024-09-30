@@ -10,22 +10,22 @@ using Locacoes.Models;
 
 namespace Locacoes.Controllers
 {
-    public class ClienteController : Controller
+    public class LocacaoController : Controller
     {
         private readonly locacoesContext _context;
 
-        public ClienteController(locacoesContext context)
+        public LocacaoController(locacoesContext context)
         {
             _context = context;
         }
 
-        // GET: Clientes
+        // GET: Locacao
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Clientes.ToListAsync());
+            return View(await _context.Locacoes.ToListAsync());
         }
 
-        // GET: Clientes/Details/5
+        // GET: Locacao/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +33,39 @@ namespace Locacoes.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (cliente == null)
+            var locacao = await _context.Locacoes
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (locacao == null)
             {
                 return NotFound();
             }
 
-            return View(cliente);
+            return View(locacao);
         }
 
-        // GET: Clientes/Create
+        // GET: Locacao/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Clientes/Create
+        // POST: Locacao/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,Nome,Email,Telefone,Cidade")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("Id,DataLocacao,ValorTotal,ClientId")] Locacao locacao)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cliente);
+                _context.Add(locacao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(cliente);
+            return View(locacao);
         }
 
-        // GET: Clientes/Edit/5
+        // GET: Locacao/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +73,22 @@ namespace Locacoes.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente == null)
+            var locacao = await _context.Locacoes.FindAsync(id);
+            if (locacao == null)
             {
                 return NotFound();
             }
-            return View(cliente);
+            return View(locacao);
         }
 
-        // POST: Clientes/Edit/5
+        // POST: Locacao/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,Nome,Email,Telefone,Cidade")] Cliente cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,DataLocacao,ValorTotal,ClientId")] Locacao locacao)
         {
-            if (id != cliente.id)
+            if (id != locacao.Id)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace Locacoes.Controllers
             {
                 try
                 {
-                    _context.Update(cliente);
+                    _context.Update(locacao);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClienteExists(cliente.id))
+                    if (!LocacaoExists(locacao.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +113,10 @@ namespace Locacoes.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(cliente);
+            return View(locacao);
         }
 
-        // GET: Clientes/Delete/5
+        // GET: Locacao/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +124,34 @@ namespace Locacoes.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (cliente == null)
+            var locacao = await _context.Locacoes
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (locacao == null)
             {
                 return NotFound();
             }
 
-            return View(cliente);
+            return View(locacao);
         }
 
-        // POST: Clientes/Delete/5
+        // POST: Locacao/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente != null)
+            var locacao = await _context.Locacoes.FindAsync(id);
+            if (locacao != null)
             {
-                _context.Clientes.Remove(cliente);
+                _context.Locacoes.Remove(locacao);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClienteExists(int id)
+        private bool LocacaoExists(int id)
         {
-            return _context.Clientes.Any(e => e.id == id);
+            return _context.Locacoes.Any(e => e.Id == id);
         }
     }
 }

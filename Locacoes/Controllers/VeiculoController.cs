@@ -10,22 +10,23 @@ using Locacoes.Models;
 
 namespace Locacoes.Controllers
 {
-    public class ClienteController : Controller
+    public class VeiculoController : Controller
     {
         private readonly locacoesContext _context;
 
-        public ClienteController(locacoesContext context)
+        public VeiculoController(locacoesContext context)
         {
             _context = context;
         }
 
-        // GET: Clientes
+        // GET: Veiculo
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Clientes.ToListAsync());
+            var locacoesContext = _context.Veiculos.Include(v => v.modelo);
+            return View(await locacoesContext.ToListAsync());
         }
 
-        // GET: Clientes/Details/5
+        // GET: Veiculo/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +34,42 @@ namespace Locacoes.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (cliente == null)
+            var veiculo = await _context.Veiculos
+                .Include(v => v.modelo)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (veiculo == null)
             {
                 return NotFound();
             }
 
-            return View(cliente);
+            return View(veiculo);
         }
 
-        // GET: Clientes/Create
+        // GET: Veiculo/Create
         public IActionResult Create()
         {
+            ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome");
             return View();
         }
 
-        // POST: Clientes/Create
+        // POST: Veiculo/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,Nome,Email,Telefone,Cidade")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("Id,anoFabricacao,combustivel,kilometragem,ModeloId")] Veiculo veiculo)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cliente);
+                _context.Add(veiculo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(cliente);
+            ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome", veiculo.ModeloId);
+            return View(veiculo);
         }
 
-        // GET: Clientes/Edit/5
+        // GET: Veiculo/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +77,23 @@ namespace Locacoes.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente == null)
+            var veiculo = await _context.Veiculos.FindAsync(id);
+            if (veiculo == null)
             {
                 return NotFound();
             }
-            return View(cliente);
+            ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome", veiculo.ModeloId);
+            return View(veiculo);
         }
 
-        // POST: Clientes/Edit/5
+        // POST: Veiculo/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,Nome,Email,Telefone,Cidade")] Cliente cliente)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,anoFabricacao,combustivel,kilometragem,ModeloId")] Veiculo veiculo)
         {
-            if (id != cliente.id)
+            if (id != veiculo.Id)
             {
                 return NotFound();
             }
@@ -97,12 +102,12 @@ namespace Locacoes.Controllers
             {
                 try
                 {
-                    _context.Update(cliente);
+                    _context.Update(veiculo);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClienteExists(cliente.id))
+                    if (!VeiculoExists(veiculo.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +118,11 @@ namespace Locacoes.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(cliente);
+            ViewData["ModeloId"] = new SelectList(_context.Modelos, "Id", "Nome", veiculo.ModeloId);
+            return View(veiculo);
         }
 
-        // GET: Clientes/Delete/5
+        // GET: Veiculo/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,34 +130,35 @@ namespace Locacoes.Controllers
                 return NotFound();
             }
 
-            var cliente = await _context.Clientes
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (cliente == null)
+            var veiculo = await _context.Veiculos
+                .Include(v => v.modelo)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (veiculo == null)
             {
                 return NotFound();
             }
 
-            return View(cliente);
+            return View(veiculo);
         }
 
-        // POST: Clientes/Delete/5
+        // POST: Veiculo/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
-            if (cliente != null)
+            var veiculo = await _context.Veiculos.FindAsync(id);
+            if (veiculo != null)
             {
-                _context.Clientes.Remove(cliente);
+                _context.Veiculos.Remove(veiculo);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClienteExists(int id)
+        private bool VeiculoExists(int id)
         {
-            return _context.Clientes.Any(e => e.id == id);
+            return _context.Veiculos.Any(e => e.Id == id);
         }
     }
 }
